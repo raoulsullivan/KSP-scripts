@@ -21,7 +21,7 @@ if degfroman > 180 {
 set timetoan to ship:obt:period * (degfroman)/360.
 print "Time to node (mins): "+round(timetoan/60,1).
 set nodex to node (time:seconds+timetoan,0,dv,0).
-
+add nodex.
 print "CALC-INCNODE DONE".
 wait 5.
 clearscreen.
