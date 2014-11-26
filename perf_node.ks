@@ -1,18 +1,10 @@
-//performs the next node (nodex).
+//performs the next node (n).
 clearscreen.
 print "PERF_NODE CALLED".
-//whether to control roll when performing maneuver. set to false for normal/antinormal
-declare parameter rollcontrol.
-//thrust power to use (0-1)
-declare parameter thrustpower.
-//number of rcs thrusters available
-declare parameter rcsthrusters.
-//use rcs if dv is less than the threshold.
-declare parameter rcsthreshold.
+declare parameter rollcontrol, thrustpower, rcsthrusters, rcsthreshold, usewarp.
 
-set step to "Warp to align".
-set nodex to nextnode.
-if nodex:deltav:mag < rcsthreshold {
+set n to nextnode.
+if n:deltav:mag < rcsthreshold {
 	set usercs to true.
 	print "Use RCS for this burn".
 	set thrust to rcsthrusters * 1.
@@ -27,7 +19,7 @@ set thrust to thrust * 1000.
 print "Thrust available (kN): "+thrust/1000.
 print "ISP: "+isp.
 
-set mfinal to ship:mass*1000/(constant():e^(abs(nodex:deltav:mag)/(isp * 9.8066))).
+set mfinal to ship:mass*1000/(constant():e^(abs(n:deltav:mag)/(isp * 9.8066))).
 print("Mass after burn: "+round(mfinal)).
 set mchange to (ship:mass*1000 - mfinal).
 print("Mass change: "+round(mchange)).
@@ -35,28 +27,26 @@ set mdot to thrust*thrustpower/(isp * 9.8066).
 print "Mass change per second: "+round(mdot).
 set burntime to mchange/mdot.
 print "Burn time: "+round(burntime).
-set burnstart to nodex:eta+time - (burntime/2).
+set burnstart to n:eta+time - (burntime/2).
 print("Burn start: "+burnstart).
 set burnstop to burnstart + burntime.
 set timetoburn to time - burnstart.
 print("Time to burn: "+timetoburn).
 	
-set burnstart to nodex:eta+time - (burntime/2).
+set burnstart to n:eta+time - (burntime/2).
 set burnstop to burnstart + burntime.
+if usewarp {
 set warp to 3.
+}.
 when time >= burnstart-90 then {
 	set warp to 0.
-	set step to "Align".
-	when abs(nodex:deltav:mag) < 3 then { 
-		if time < burnstop {
-			print "Locking node now".
-			set tH to nodex:burnvector:direction+r(0,0,-90).
-		}.
+	when abs(n:deltav:mag) < 3 then { 
+		print "Locking node now".
+		set df to n:burnvector:direction+r(0,0,270).
 	}.
 	RCS on.
 }.
 when time >= burnstart then {
-	set step to "Thrust".
 	if usercs = true {
 		set ship:control:fore to thrustpower.
 	}
@@ -65,25 +55,19 @@ when time >= burnstart then {
 	}.
 }.
 
-lock tH to nodex:burnvector:direction+r(0,0,-90).
+lock df to n:burnvector:direction+r(0,0,270).
 
 copy PIDsetup from 0.
-set PIDvars to list().
-run PIDsetup.
+run PIDsetup(0.1,1,0.1,1,0.1,1,1,1,1).
 delete PIDsetup.
 copy PID1 from 0.
-
-lock df to ship:prograde + r(0,0,0).
-lock topUnit to ship:facing*R(-90,0,0):Vector.
-lock starUnit to ship:facing*R(0,90,0):Vector.
-lock fwdUnit to ship:facing*R(0,0,-90):Vector.
-lock pitchOff to 90*VDOT(df:vector,topUnit).
-lock yawOff to 90*VDOT(df:vector,starUnit).
-lock rollOff to df:roll - ship:facing:roll.
-
-copy PID1 from 0.
+set rp to 0.
+lock rcspower to ship:mass/100.
+if rollcontrol {lock rp to rcspower.}.
 until time > burnstop {
-	run PID1(.5, .5, 0).
+	print "Burn start in "+round(time:seconds-burnstart:seconds)+"    " at (0,dRow-3).
+	print "Burn stop in "+round(time:seconds-burnstop:seconds)+"    " at (0,dRow-2).
+	run PID1(rcspower, rcspower, rp).
 	wait 0.1.
 }.
 set ship:control:yaw to 0.
@@ -92,10 +76,8 @@ set ship:control:roll to 0.
 set ship:control:fore to 0.
 lock throttle to 0.
 rcs off.
-unlock tH.
-remove nodex.
-set step to "Done".
-
+unlock df.
+remove n.
 delete PID1.
 
 print "PERF_NODE DONE".
