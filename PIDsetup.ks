@@ -1,17 +1,8 @@
 //sets up PIDvars, direction Units and Off, vectors
-declare parameter kpr. //0.1
-declare parameter kdr. //1
-declare parameter kpy. //0.1
-declare parameter kdy. //1
-declare parameter kpp. //0.1
-declare parameter kdp. //1
-declare parameter pT. //1
-declare parameter yT. //1
-declare parameter rT.//1
+declare parameter kpr, kdr, kpy, kdy, kpp, kdp, pT, yT, rT.
 
-clearscreen.
 print "RUNNING PIDSetup".
-
+set PIDvars to list().
 PIDvars:add(kpr).
 PIDvars:add(kdr).
 PIDvars:add(kpy).
@@ -22,6 +13,15 @@ PIDvars:add(kdp).
 set pThresh to pT.
 set yThresh to yT.
 set rThresh to rT.
+
+//launch and initial ascent
+//heading locks
+lock topUnit to ship:facing*R(-90,0,0):Vector.
+lock starUnit to ship:facing*R(0,90,0):Vector.
+lock fwdUnit to ship:facing*R(0,0,-90):Vector.
+lock pitchOff to 90*VDOT(df:vector,topUnit).
+lock yawOff to 90*VDOT(df:vector,starUnit).
+lock rollOff to df:roll - ship:facing:roll.
 
 //last error inputs
 set PIDlasterrors to list().
@@ -40,10 +40,6 @@ PIDvectors:add(vd1).
 PIDvectors:add(vd2).
 PIDvectors:add(vd3).
 PIDvectors:add(vd4).
-
-print "PIDSetup COMPLETE".
-wait 5.
-clearscreen.
 
 set dRow to 20.
 set dColSpan to 7.
