@@ -1,10 +1,10 @@
 clearscreen.
-declare parameter(step).
+declare parameter step.
 print "Mission: TRIXIE!".
 print "Destination: Mun".
 print "Objective: Sample return and seismic scan".
-if (step == null) {
-	print "Step 1: Launch".
+if step = 0 {
+	print "Step 0: Launch".
 } else {
-	print "Step".
+	print step.
 }.
