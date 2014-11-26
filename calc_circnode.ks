@@ -7,11 +7,11 @@ declare parameter desiredalt.
 print "Desired altitude: "+desiredalt.
 
 if eta:periapsis < eta:apoapsis or eta:apoapsis = 0 {
-	print "Periapsis coming up next - will adjust apoapsis".
+	print "Periapsis coming up next - will adjust apoapsis to "+round(desiredalt/1000)+"km".
 	set nxt to ship:periapsis. 
 	set nexteta to eta:periapsis.
 } else {
-	print "Apoapsis coming up next - will adjust periapsis".
+	print "Apoapsis coming up next - will adjust periapsis to "+round(desiredalt/1000)+"km".
 	set nxt to ship:apoapsis. 
 	set nexteta to eta:apoapsis.
 }.
@@ -31,7 +31,7 @@ print "Delta v: "+round(dv).
 
 print "Time to node (mins): "+round(nexteta/60,1).
 set nodex to node (time:seconds+nexteta,0,0,dv).
-
+add nodex.
 print "CALC_CIRCNODE DONE".
 wait 5.
 clearscreen.
