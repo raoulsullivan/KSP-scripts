@@ -21,15 +21,20 @@ if yE < -180 {set yE to (360 + yE).}.
 if abs(yE) < yThresh and (abs(yE - lYE) < (yThresh/10)) { set yDZ to 0.} else {set yDZ to 1.}.
 set ship:control:Yaw to yawpower * yDZ * ((PIDvars[2] * abs(yE)^1/3 * (abs(yE)/yE)) + (PIDvars[3] * (yE - lYE))).
 
-set lRE to PIDLastErrors[2].
-set rE to rollOff.
-//if rollpower = 0 {set rE to 0.}.
-set PIDLastErrors[2] to rE.
-if rE > 180 {set rE to (360 - rE) * -1.}.
-if rE < -180 {set rE to (360 + rE).}.
-if abs(rE) < rThresh and (abs(rE - lRE) < (rThresh/10)) { set rDZ to 0.} else {set rDZ to 1.}.
+
 if rollpower <> 0 {
-set ship:control:roll to -rollpower * rDZ * ((PIDvars[0] * abs(rE)^1/3 * (abs(rE)/rE))+(PIDvars[1]*(rE - lRE))).
+	set lRE to PIDLastErrors[2].
+	set rE to rollOff.
+	set PIDLastErrors[2] to rE.
+	if rE > 180 {set rE to (360 - rE) * -1.}.
+	if rE < -180 {set rE to (360 + rE).}.
+	if abs(rE) < rThresh and (abs(rE - lRE) < (rThresh/10)) { set rDZ to 0.} else {set rDZ to 1.}.
+	set ship:control:roll to -rollpower * rDZ * ((PIDvars[0] * abs(rE)^1/3 * (abs(rE)/rE))+(PIDvars[1]*(rE - lRE))).
+} else {
+	set ship:control:roll to 0.
+	set rE to 0.
+	set lRE to 0.
+	set rDZ to 0.
 }.
 
 if (pDZ + yDZ + rDZ) = 0 {set onTarget to true.} else {set onTarget to false.}.
@@ -52,5 +57,5 @@ print round(ship:control:yaw,1)+"     " at (dColSpan*5,dRow+3).
 print rDZ at (dColSpan*6,dRow+1).
 print pDZ at (dColSpan*6,dRow+2).
 print yDZ at (dColSpan*6,dRow+3).
-print "On target: "+onTarget+" " at (0,dRow+5).
-print "Total error: "+round(abs(re)+abs(pe)+abs(ye),2)+" " at (0,dRow+6).
+print "On target: "+onTarget+" " at (0,dRow+9).
+print "Total error: "+round(abs(re)+abs(pe)+abs(ye),2)+" " at (0,dRow+10).
