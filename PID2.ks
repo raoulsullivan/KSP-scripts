@@ -1,4 +1,4 @@
-declare parameter toppower, starpower, forepower.
+declare parameter toppower, starpower, forepower, useengine.
 set PIDvectors[4]:vec to relativevelocity.
 
 set tE to topOff.
@@ -20,7 +20,11 @@ set fPP to PID2vars[4] * (abs(fE)^(1/2)) * (abs(fE)/fE).
 set fDD to PID2vars[5] * foreRate.
 set fPID to fPP + fDD.
 set fPower to min(forepower,abs(fPID)).
-set ship:control:fore to fPower * (abs(fPID)/fPID).
+if useengine {
+	lock throttle to fPower.
+} else {
+	set ship:control:fore to fPower * (abs(fPID)/fPID).
+}.
 
 print "0" at (dColSpan,dRow+5).
 print "0" at (dColSpan,dRow+6).
@@ -37,3 +41,7 @@ print round(foreRate,1)+"     " at (dColSpan*4,dRow+7).
 print round(ship:control:top,1)+"     " at (dColSpan*5,dRow+5).
 print round(ship:control:starboard,1)+"     " at (dColSpan*5,dRow+6).
 print round(ship:control:fore,1)+"     " at (dColSpan*5,dRow+7).
+print round(forepower,1)+"     " at (dColSpan*5,dRow+12).
+print round(fPID,1)+"     " at (dColSpan*5,dRow+13).
+print round(fPower,1)+"     " at (dColSpan*5,dRow+14).
+print round(throttle,1)+"     " at (dColSpan*5,dRow+15).
