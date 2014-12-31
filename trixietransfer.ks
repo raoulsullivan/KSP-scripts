@@ -44,7 +44,7 @@ set desireddv to desiredvelocityatap -currentvelocityatap.
 print(desireddv).
 
 //calculate current phase angle
-lock shippos to mod((ship:obt:lan + ship:obt:argumentofperiapsis + ship:obt:trueanomaly),360).
+lock 	 to mod((ship:obt:lan + ship:obt:argumentofperiapsis + ship:obt:trueanomaly),360).
 lock targetpos to mod((target:obt:lan + target:obt:argumentofperiapsis + target:obt:trueanomaly),360).
 set phaseangle to targetpos-shippos.
 if (phaseangle < 0) { set phaseangle to 360+phaseangle.}.

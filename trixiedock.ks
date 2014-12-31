@@ -7,11 +7,7 @@ lock dF to dockingportvector:direction.
 lock totalerror to abs(rE) + abs(pE) + abs(yE).
 lock te2 to max(0,totalerror - 10).
 lock translationpower to max(0,0.2-te2).
-lock alignposition to dockingportvector+v(-50,10,0) + target:position.
-print "Moving alongside target".
-when alignposition:mag < 1 then {
-	set step to "Done".
-}.
+lock alignposition to (dockingportvector*15) + target:position.
 when alignposition:mag < 0.5 then {
 	print "Final approach". 
 	lock alignposition to target:position.
@@ -20,25 +16,6 @@ when alignposition:mag < 0.5 then {
 	}.
 }.
 
-
-copy pidsetup from 0.
-run PIDsetup(0.1,1.5,0.1,1.5,0.1,1.5,1,1,1).
-delete pidsetup.
-copy pid2setup from 0.
-run pid2setup(0.1,1,0.1,1,0.1,1).
-delete pid2setup.
-copy pid1 from 0.
-copy pid2 from 0.
-rcs on.
-lock rcspower to ship:mass/100.
-set step to "Not done".
-until step = "Done" {
-	run pid1(rcspower,rcspower,0).
-	run pid2(translationpower,translationpower,translationpower).
-	wait 0.1.
-}.
-
-lock alignposition to (dockingportvector*15) + target:position.
 set step to "Not done".
 print "Activating lander power and rcs".
 set RCSgroup to ship:partstagged("landerRCSBottom").
@@ -56,11 +33,28 @@ for x in Monopropgroup {
 print "Jettison orbital service module".
 stage.
 print "Moving to final approach position".
+
+
+copy pidsetup from 0.
+run PIDsetup(0.1,1.5,0.1,1.5,0.1,1.5,1,1,1).
+delete pidsetup.
+copy pid2setup from 0.
+run pid2setup(0.1,1,0.1,1,0.1,1).
+delete pid2setup.
+copy pid1 from 0.
+copy pid2 from 0.
+rcs on.
+lock rcspower to ship:mass/100.
+set step to "Not done".
 until step = "Done" {
 	run pid1(rcspower,rcspower,0).
-	run pid2(translationpower,translationpower,translationpower).
+	run pid2(translationpower,translationpower,translationpower,false).
 	wait 0.1.
 }.
+
+
+
+
 
 print "Deactivating lander power and rcs".
 for x in RCSgroup {

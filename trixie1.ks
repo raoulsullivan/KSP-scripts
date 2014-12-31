@@ -3,7 +3,7 @@ declare parameter tA1, tA2, tInc. //grav turn (8000), final (80000), inclination
 set df to heading(tInc,90)+ R(0,0,0).
 
 copy pidsetup from 0.
-run pidsetup(0.5,0.5,0.5,0.5,0.5,0.5,1,1,1).
+run pidsetup(0.1,0.1,0.5,0.5,0.5,0.5,1,1,1).
 delete pidsetup.
 
 print "LAUNCH SEQUENCE START".
@@ -58,19 +58,19 @@ copy calc_incnode from 0.
 run calc_incnode(0).
 delete calc_incnode.
 copy perf_node from 0.
-run perf_node(false,1,0,0,true).
+run perf_node(false,1,8,10,true).
 delete perf_node.
 copy calc_circnode from 0.
 run calc_circnode(80000).
 delete calc_circnode.
 copy perf_node from 0.
-run perf_node(true,1,0,0,true).
+run perf_node(true,1,8,10,true).
 delete perf_node.
 copy calc_circnode from 0.
 run calc_circnode(80000).
 delete calc_circnode.
 copy perf_node from 0.
-run perf_node(true,1,0,0,true).
+run perf_node(true,1,8,10,true).
 delete perf_node.
 lock df to north.
 set rollcontrol to false.

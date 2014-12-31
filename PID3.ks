@@ -1,31 +1,30 @@
 declare parameter toppower, starpower, forepower, useengine.
 set PIDvectors[4]:vec to relativevelocity.
-set PIDvectors[5]:vec to alignposition.
 
-set tE to topOff.
-set tPP to PID2vars[0] * (abs(tE)^(1/2)) * (abs(tE)/tE).
-set tDD to PID2vars[1] * topRate.
+set tE to 0.
+set tPP to tE.
+set tDD to PID3vars[1] * topRate.
 set tPID to tPP + tDD.
 set tPower to min(toppower,abs(tPID)).
 set ship:control:top to tPower * (abs(tPID)/tPID).
 
-set sE to starOff.
-set sPP to PID2vars[2] * (abs(sE)^(1/2)) * (abs(sE)/sE).
-set sDD to PID2vars[3] * starRate.
+set sE to 0.
+set sPP to sE.
+set sDD to PID3vars[3] * starRate.
 set sPID to sPP + sDD.
 set sPower to min(starpower,abs(sPID)).
 set ship:control:starboard to sPower * (abs(sPID)/sPID).
 
-set fE to foreOff.
-set fPP to PID2vars[4] * (abs(fE)^(1/2)) * (abs(fE)/fE).
-set fDD to PID2vars[5] * foreRate.
+set fE to alt:radar.
+set fPP to PID3vars[4] * fE.
+set fDD to PID3vars[5] * foreRate.
 set fPID to fPP + fDD.
 set fPower to min(forepower,abs(fPID)).
 if useengine = true {
-	lock throttle to fPower * (abs(fPID)/fPID).
+	lock throttle to -fPower * (abs(fPID)/fPID).
 } else {
 	lock throttle to 0.
-	set ship:control:fore to fPower * (abs(fPID)/fPID).
+	set ship:control:fore to -fPower * (abs(fPID)/fPID).
 }.
 
 print "0" at (dColSpan,dRow+5).

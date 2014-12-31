@@ -16,6 +16,7 @@ set ship:control:roll to 0.
 set ship:control:fore to 0.
 rcs off.
 set warp to 1.
+wait 5.
 set warp to 0.
 delete PID1.
 print "PERF_ALIGNMENT DONE".

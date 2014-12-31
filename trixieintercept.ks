@@ -72,9 +72,12 @@ wait 5.
 copy perf_node from 0.
 run perf_node(true,1,8,5,false).
 delete perf_node.
-set nodex to node (time:seconds+ship:obt:period,0,0,-dv).
-add nodex.
-copy perf_node from 0.
-run perf_node(true,1,8,5,true).
-delete perf_node.
+set warp to 3.
+set dtime to ship:obt:period * 0.95.
+print dtime.
+set dtime to time+dtime.
+wait until time > dtime.
+set warp to 0.
+//ok now for clever.
+
 print "Done?".

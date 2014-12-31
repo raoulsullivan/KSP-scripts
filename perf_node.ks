@@ -1,7 +1,7 @@
 //performs the next node (n).
 clearscreen.
 print "PERF_NODE CALLED".
-declare parameter rollcontrol, thrustpower, rcsthrusters, rcsthreshold, usewarp.
+declare parameter rollcontrol, thrustpower, rcsthrusters, rcsthreshold, usewarp, progradelock.
 
 set n to nextnode.
 if n:deltav:mag < rcsthreshold {
@@ -27,7 +27,7 @@ set mdot to thrust*thrustpower/(isp * 9.8066).
 print "Mass change per second: "+round(mdot).
 set burntime to mchange/mdot.
 print "Burn time: "+round(burntime).
-set burnstart to n:eta+time - (burntime/2).
+set burnstart to n:eta+time - (burntime*0.5).
 print("Burn start: "+burnstart).
 set burnstop to burnstart + burntime.
 set timetoburn to time - burnstart.
@@ -56,14 +56,12 @@ when time >= burnstart then {
 }.
 
 lock df to n:burnvector:direction+r(0,0,270).
+if progradelock {lock df to prograde + r(0,0,270).}.
 
-copy PIDsetup from 0.
-run PIDsetup(0.1,1,0.1,1,0.1,1,1,1,1).
-delete PIDsetup.
 copy PID1 from 0.
 set rp to 0.
-lock rcspower to ship:mass/100.
-if rollcontrol {lock rp to rcspower.}.
+set rcspower to ship:mass/100.
+if rollcontrol {set rp to rcspower.}.
 until time > burnstop {
 	print "Burn start in "+round(time:seconds-burnstart:seconds)+"    " at (0,dRow-3).
 	print "Burn stop in "+round(time:seconds-burnstop:seconds)+"    " at (0,dRow-2).
