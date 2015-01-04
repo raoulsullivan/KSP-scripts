@@ -1,13 +1,14 @@
 declare parameter targetperiapsis.
-if ship:obt:HASNEXTPATCH = False {
-	print "Epic fail - no next patch".
-} else {
-	set p to ship:obt:nextpatch.
-}.
+print "Trimming intercept periapsis to "+targetperiapsis/1000+"km".
+lock df to prograde.
 copy pidsetup from 0.
 run PIDsetup(0.1,1.5,0.1,1.5,0.1,1.5,1,1,1).
 delete pidsetup.
-lock df to prograde.
+
+if ship:obt:HASNEXTPATCH = False {
+	print "Epic fail - no next patch".
+}.
+set p to ship:obt:nextpatch.
 copy pid1 from 0.
 lock totalerror to abs(rE) + abs(pE) + abs(yE).
 lock te2 to max(0,totalerror - 10).
