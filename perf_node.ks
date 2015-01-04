@@ -40,24 +40,27 @@ set warp to 3.
 }.
 when time >= burnstart-90 then {
 	set warp to 0.
-	when abs(n:deltav:mag) < 3 then { 
-		print "Locking node now".
-		set df to n:burnvector:direction+r(0,0,270).
-	}.
+	//when abs(n:deltav:mag) < 3 then { 
+	//	print "Locking node now".
+	//	set dF to n:burnvector:direction+r(0,0,270).
+	//}.
 	RCS on.
 }.
+lock tp to min(n:deltav:mag/(maxthrust/mass), 1) * thrustpower.
 when time >= burnstart then {
 	if usercs = true {
-		set ship:control:fore to thrustpower.
+		set ship:control:fore to tp.
 	}
 	else {
-		lock throttle to thrustpower.
+		lock throttle to tp.
 	}.
 }.
 
-lock df to n:burnvector:direction+r(0,0,270).
-if progradelock {lock df to prograde + r(0,0,270).}.
-
+lock dF to n:burnvector:direction+r(0,0,270).
+if progradelock {lock dF to prograde + r(0,0,270).}.
+copy pidsetup from 0.
+run pidsetup(0.1,2,0.1,2,0.1,2,1,1,1).
+delete pidsetup.
 copy PID1 from 0.
 set rp to 0.
 set rcspower to ship:mass/100.
@@ -66,7 +69,6 @@ until time > burnstop {
 	print "Burn start in "+round(time:seconds-burnstart:seconds)+"    " at (0,dRow-3).
 	print "Burn stop in "+round(time:seconds-burnstop:seconds)+"    " at (0,dRow-2).
 	run PID1(rcspower, rcspower, rp).
-	wait 0.1.
 }.
 set ship:control:yaw to 0.
 set ship:control:pitch to 0.
