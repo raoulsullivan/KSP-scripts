@@ -12,22 +12,16 @@ if step = "1" {
 	for x in RCSgroup {
 		x:getmodule("modulercs"):doevent("disable rcs port").
 	}.
-	copy joleen1 from 1.
+	copy joleen1 from 0.
 	run joleen1(8000,80000,96).
 	delete joleen1.
 	clearscreen.
 } else if step = "2" {
 	print "Step 2: Transfer".
-	wait 5.
-	copy trixieintercept from 0.
-	run trixieintercept.
-	delete trixieintercept.
-	copy interceptweak from 0.
-	run interceptweak.
-	delete interceptweak.
-	copy trixiedock from 0.
-	run trixiedock.
-	delete trixiedock.
+	copy joleen2 from 0.
+	run joleen2.
+	delete joleen2.
+	clearscreen.
 } else if step = "2" {
 	copy trixieintercept2 from 0.
 	run trixieintercept2.
