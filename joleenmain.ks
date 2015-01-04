@@ -1,27 +1,23 @@
 clearscreen.
 declare parameter step.
-print "Mission: TRIXIE!".
-print "Destination: Mun".
-print "Objective: Sample return and seismic scan".
+print "Mission: JOLEEN!".
+print "Destination: Minmus".
+print "Objective: Gravity, temperature, pressure survey. Sample return and seismic scan".
 
-if step = "0a" {
-	print "Step 0a: Launch Trixie 2 (Transfer stage)".
+if step = "1" {
+	print "Step 1: Launch Joleen, weather survey".
 	wait 5.
-	copy trixie1 from 0.
-	run trixie1(8000,80000,90).
-	delete trixie1.
-} else if step = "0b" {
-	print "Step 0b: Launch Trixie 1 (Landing and return stage)".
-	set RCSgroup to ship:partstagged("landerRCSBottom").
+	//launch when minimus ascending node is overhead
+	set RCSgroup to ship:partstagged("landerBottomRCS").
 	for x in RCSgroup {
 		x:getmodule("modulercs"):doevent("disable rcs port").
 	}.
-	wait 5.
-	copy trixie1 from 0.
-	run trixie1(15000,80000,90).
-	delete trixie1.
-} else if step = "1" {
-	print "Step 1: Docking".
+	copy joleen1 from 1.
+	run joleen1(8000,80000,96).
+	delete joleen1.
+	clearscreen.
+} else if step = "2" {
+	print "Step 2: Transfer".
 	wait 5.
 	copy trixieintercept from 0.
 	run trixieintercept.

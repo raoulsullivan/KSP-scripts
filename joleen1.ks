@@ -1,4 +1,4 @@
-//launcher script for the Trixie missions
+//launcher script for the Joleen mission
 declare parameter tA1, tA2, tInc. //grav turn (8000), final (80000), inclination (90)
 set df to heading(tInc,90)+ R(0,0,0).
 
@@ -27,13 +27,20 @@ when altitude > 15001 then {
 	print "REACTION CONTROL ON".
 	RCS on.
 }.
-when stage:solidfuel = 0 then { stage.}.
-when stage:liquidfuel = 0 then { stage.}.
+when stage:liquidfuel = 0 then {
+	stage.
+}.
+when altitude > 50000 then {
+	toggle AG1.
+	toggle AG2.
+}.
 copy pid1 from 0.
 until apoapsis >= tA2 {
 	run pid1(1,1,1).
 	wait 0.1.
 }.
+lock throttle to 0.
+
 delete pid1.
 set ship:control:yaw to 0.
 set ship:control:pitch to 0.
@@ -43,38 +50,24 @@ set ship:control:roll to 0.
 print "COAST TO APOAPSIS AT "+tA2/1000+"km".
 lock throttle to 0.
 rcs off.
+copy pidsetup from 0.
+run pidsetup(0.1,1,0.1,1,0.1,1,1,1,1).
+delete pidsetup.
 copy calc_circnode from 0.
 run calc_circnode(80000).
 delete calc_circnode.
 copy perf_node from 0.
-run perf_node(true,1,0,0,false).
+run perf_node(true,1,0,0,false,false).
+delete perf_node.
+stage.
+copy calc_incnode from 0.
+run calc_incnode(6).
+delete calc_incnode.
+copy perf_node from 0.
+run perf_node(false,1,0,0,true,false).
 delete perf_node.
 print "LAUNCH COMPLETE".
 print "APOAPSIS: "+round(apoapsis/1000,3)+"km".
 print "PERIAPSIS: "+round(periapsis/1000,3)+"km".
 print "INCLINATION: "+obt:inclination+"deg".
-stage.
-copy calc_incnode from 0.
-run calc_incnode(0).
-delete calc_incnode.
-copy perf_node from 0.
-run perf_node(false,1,8,10,true).
-delete perf_node.
-copy calc_circnode from 0.
-run calc_circnode(80000).
-delete calc_circnode.
-copy perf_node from 0.
-run perf_node(true,1,8,10,true).
-delete perf_node.
-copy calc_circnode from 0.
-run calc_circnode(80000).
-delete calc_circnode.
-copy perf_node from 0.
-run perf_node(true,1,8,10,true).
-delete perf_node.
-lock df to north.
-set rollcontrol to false.
-copy perf_alignment from 0.
-run perf_alignment.
-delete perf_alignment.
 print "Done. Go launch Trixie 1 now!".
