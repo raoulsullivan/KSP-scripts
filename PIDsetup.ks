@@ -28,14 +28,14 @@ set pThresh to pT.
 set yThresh to yT.
 set rThresh to rT.
 
-//launch and initial ascent
 //heading locks
+print df.
 lock topUnit to ship:facing*R(-90,0,0):Vector.
 lock starUnit to ship:facing*R(0,90,0):Vector.
 lock fwdUnit to ship:facing*R(0,0,-90):Vector.
-lock pitchOff to 90*VDOT(df:vector,topUnit).
-lock yawOff to 90*VDOT(df:vector,starUnit).
-lock rollOff to df:roll - ship:facing:roll.
+lock pitchOff to 90*VDOT(dF:vector,topUnit).
+lock yawOff to 90*VDOT(dF:vector,starUnit).
+lock rollOff to dF:roll - ship:facing:roll.
 
 //last error inputs
 set PIDlasterrors to list().
@@ -43,11 +43,11 @@ PIDlasterrors:add(0). //pitch
 PIDlasterrors:add(0). //yaw
 PIDlasterrors:add(0). //roll
 
-
-
 set dRow to 20.
 set dColSpan to 7.
 print "      | TAR  | ACT  | ERR  | RAT  | INP  | DEAD" at (0,dRow).
 print "ROLL" at (0,dRow+1).
 print "PITCH" at (0,dRow+2).
 print "YAW" at (0,dRow+3).
+
+set ontarget to false.
