@@ -10,16 +10,16 @@ set pE to pitchOff.
 set PIDLastErrors[0] to pE.
 if pE > 180 {set pE to (360 - pE) * -1.}.
 if pE < -180 {set pE to (360 + pE).}.
-if abs(pE) < pThresh and (abs(pE - lPE) < (pThresh/10)) { set pDZ to 0.} else {set pDZ to 1.}.
-set ship:control:pitch to pitchpower * pDZ * ((PIDvars[4] * abs(pE)^1/3 * (abs(pE)/pE)) + (PIDvars[5]*(pE - lPE))).
+if abs(pE) < pThresh and (abs(pE - lPE) < (pThresh/45)) { set pDZ to 0.} else {set pDZ to 1.}.
+set ship:control:pitch to pitchpower * pDZ * ((PIDvars[4] * abs(min(pE,10))^1/3 * (abs(pE)/pE)) + (PIDvars[5]*(pE - lPE))).
 
 set lYE to PIDLastErrors[1].
 set yE to yawOff.
 set PIDLastErrors[1] to yE.
 if yE > 180 {set yE to (360 - yE) * -1.}.
 if yE < -180 {set yE to (360 + yE).}.
-if abs(yE) < yThresh and (abs(yE - lYE) < (yThresh/10)) { set yDZ to 0.} else {set yDZ to 1.}.
-set ship:control:Yaw to yawpower * yDZ * ((PIDvars[2] * abs(yE)^1/3 * (abs(yE)/yE)) + (PIDvars[3] * (yE - lYE))).
+if abs(yE) < yThresh and (abs(yE - lYE) < (yThresh/45)) { set yDZ to 0.} else {set yDZ to 1.}.
+set ship:control:Yaw to yawpower * yDZ * ((PIDvars[2] * abs(min(yE,10))^1/3 * (abs(yE)/yE)) + (PIDvars[3] * (yE - lYE))).
 
 
 if rollpower <> 0 {
@@ -28,7 +28,7 @@ if rollpower <> 0 {
 	set PIDLastErrors[2] to rE.
 	if rE > 180 {set rE to (360 - rE) * -1.}.
 	if rE < -180 {set rE to (360 + rE).}.
-	if abs(rE) < rThresh and (abs(rE - lRE) < (rThresh/10)) { set rDZ to 0.} else {set rDZ to 1.}.
+	if abs(rE) < rThresh and (abs(rE - lRE) < (rThresh/45)) { set rDZ to 0.} else {set rDZ to 1.}.
 	set ship:control:roll to -rollpower * rDZ * ((PIDvars[0] * abs(rE)^1/3 * (abs(rE)/rE))+(PIDvars[1]*(rE - lRE))).
 } else {
 	set ship:control:roll to 0.
@@ -38,6 +38,7 @@ if rollpower <> 0 {
 }.
 
 if (pDZ + yDZ + rDZ) = 0 {set onTarget to true.} else {set onTarget to false.}.
+set totalerror to abs(re)+abs(pe)+abs(ye).
 
 print round(dF:roll,1)+"     " at (dColSpan,dRow+1).
 print round(dF:pitch,1)+"     " at (dColSpan,dRow+2).
@@ -58,4 +59,4 @@ print rDZ at (dColSpan*6,dRow+1).
 print pDZ at (dColSpan*6,dRow+2).
 print yDZ at (dColSpan*6,dRow+3).
 print "On target: "+onTarget+" " at (0,dRow+9).
-print "Total error: "+round(abs(re)+abs(pe)+abs(ye),2)+" " at (0,dRow+10).
+print "Total error: "+round(totalerror,2)+" " at (0,dRow+10).

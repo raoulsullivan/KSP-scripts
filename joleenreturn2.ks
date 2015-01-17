@@ -6,7 +6,6 @@ set sma to (bd:apoapsis + 2*bd:body:radius + bd:periapsis)/2.
 set soi to sma*(bd:mu/bd:body:mu)^0.4.
 
 set rb to 200000.
-set mu to 6.5138398*10^10.
 set pi to constant():pi.
 
 //move origin to central body (i.e. Kerbin)
@@ -28,12 +27,12 @@ print "Print hyperbolic excess: "+vhe.
 
 
 set ra to bd:radius + (periapsis+apoapsis)/2.
-set v2 to sqrt(vhe^2 - 2*bd:mu*(1/soi - 1/ra)).
+set v2 to sqrt(vhe^2 - 2*body:mu*(1/soi - 1/ra)).
 print "Velocity for soi: "+v2.
 
 set vom to velocity:orbit:mag.          // actual velocity
 set r to bd:radius + altitude.                 // actual distance to body
-set va to sqrt( vom^2 - 2*bd:mu*(1/ra - 1/r) ).
+set va to sqrt( vom^2 - 2*body:mu*(1/ra - 1/r) ).
 print "Average velocity: "+va.
 set deltav to v2 - va.
 print "DV: "+deltav.
@@ -48,58 +47,66 @@ print "As0: "+as0.
 
 
 
-set soe to v2^2/2 - mu/ra.              // specific orbital energy
+set soe to v2^2/2 - body:mu/ra.              // specific orbital energy
+print soe.
 set h to ra * v2.
-set e to sqrt(1+(2*soe*(h/mu)^2)).      // eccentricity of hyperbolic orbit
+print h.
+set e to sqrt(1+(2*soe*(h/body:mu)^2)).      // eccentricity of hyperbolic orbit
+print e.
 set tai to arccos(-1/e).                // angle between the periapsis vector and the departure asymptote
-set sma to -mu/(2*soe).
+set sma to - (body:mu/(2*soe)).
 set ip to -sma/tan(arcsin(1/e)).        // impact parameter 
 set aip to arctan(ip/soi).              // angle to turn leaving mun soi point on mun orbit
 set asoi to tai - aip.
-set aburn to ac + -99 + asoi.
+set aburn to ac + -93 + asoi.
 until aburn < as0 { set aburn to aburn - 360. }
 set eta to (as0 - aburn)/360 * ship:obt:period.
 set nd to node(time:seconds + eta, 0, 0, deltav).
 add nd.
 
-copy PIDsetup from 0.
-run PIDsetup(.1,1,.1,1,.1,1,1,1,1).
-delete PIDsetup.
+lock df to nd:deltav:mag.
 wait 5.
+clearscreen.
 
 copy perf_node from 0.
-run perf_node(false,1,0,0,true,true).
+run perf_node(true,.2,0,0,true,false,false).
 delete perf_node.
-clearscreen.
+
+set df to PROGRADE.
+copy PIDsetup from 0.
+run PIDsetup(.2,1,.2,1,.2,1,3,3,3).
+delete PIDsetup.
+
 copy PID1 from 0.
 set step to "Not done".
-lock df to prograde.
-set ontarget to false.
 lock kperi to ship:obt:nextpatch:periapsis.
 rcs on.
-if  kperi > 60000 {
+if  kperi > 65000 {
 	when ontarget then {
-		lock throttle to 0.1.
-		when kperi <= 60000 then { set step to "Done".}.
+		lock throttle to 0.01.
+		when kperi <= 65000 then { set step to "Done".}.
 	}.
 } else {
 	when ontarget then {
 		set ship:control:fore to -1.
-		when kperi >= 60000 then { set step to "Done".}.
+		when kperi >= 65000 then { set step to "Done".}.
 	}.
 }.
+lock rcspower to ship:mass/100.
 until step = "Done" {
-	run pid1(1,1,1).
+	run pid1(rcspower,rcspower,rcspower).
 	wait 0.1.
 }.
 lock throttle to 0.
 set ship:control:fore to 0.
-set warp to 1.
-until ship:altitude > 70000 {
+until ship:altitude > 35000 {
 	wait 1.
 }.
-set warp to 0.
 rcs off.
-toggle ag1.
-wait 3.
+toggle ag2.
+set goo3 to ship:partsdubbed("goo3")[0].
+set modulename to "BTSMModuleScienceExperiment".
+set eventname to "expose mystery goo".
+goo3:getmodule(modulename):doevent(eventname).
+wait 15.
 stage.

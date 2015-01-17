@@ -1,37 +1,64 @@
 declare parameter targetperiapsis.
-print "Trimming intercept periapsis to "+targetperiapsis/1000+"km".
-lock df to prograde.
-copy pidsetup from 0.
-run PIDsetup(0.1,1.5,0.1,1.5,0.1,1.5,1,1,1).
-delete pidsetup.
-
-if ship:obt:HASNEXTPATCH = False {
-	print "Epic fail - no next patch".
+clearscreen.
+print "Trimming intercept periapsis to "+(targetperiapsis/1000)+"km".
+print "Check to see if this is on target?!".
+//need to see which side of the target we're coming in at!
+//get the orbit patch, do a geoposition comparison near periapsis.
+set derped to true.
+if ship:obt:hasnextpatch {
+	if ship:obt:nextpatch:body:name = "Minmus" {
+		print "Intercept with right body".
+		set derped to false.
+		
+		//trim obt direction - need to tell which way around the orbit is!
+		//let's assume that if the apoapsis of the current orbit is less than the altitude of the planet at time
+		//this only works for circular targets at the mo
+		set planetalt to orbitat(body("minmus"),time+eta:apoapsis):periapsis.
+		set counterclockwise to false.
+		if planetalt < ship:apoapsis {
+			//planet is closer than ap - probably gonna go counterclockwise
+			set counterclockwise to true.
+			print "Orbit is counterclockwise...".
+		}.
+		set n to node (time:seconds+180,0,0,0).
+		add n.
+		lock neworbit to n:orbit:nextpatch.
+		//trim periapsis - at least this is easy.
+		if counterclockwise {
+			print "... so lower pe to other side".
+			//move orbit to other side of planet with retrograde burn.
+			until neworbit:periapsis < 0 {
+				set n:prograde to n:prograde - 0.01.
+			}.
+			print "Ok, we're out the other side - raise the pe now".
+			until neworbit:periapsis > targetperiapsis {
+				print neworbit:periapsis.
+				set n:prograde to n:prograde - 0.01.
+			}.
+		} else {
+			print "Clockwise orbit".
+			//either raise or lower pe on this side of planet
+			if neworbit:periapsis < targetperiapsis {
+				print "Raise pe".
+				//raise it
+				until neworbit:periapsis > targetperiapsis {
+					print neworbit:periapsis.
+					set n:prograde to n:prograde - 0.01.
+				}.
+			} else {
+				print "Lower pe".
+				//lower it
+				until neworbit:periapsis < targetperiapsis {
+					print neworbit:periapsis.
+					set n:prograde to n:prograde + 0.01.
+				}.
+			}.
+		}.
+		copy perf_node from 0.
+		run perf_node(false,0.01,0,0,true,false,true).
+		delete perf_node.
+	}.
 }.
-set p to ship:obt:nextpatch.
-copy pid1 from 0.
-lock totalerror to abs(rE) + abs(pE) + abs(yE).
-lock te2 to max(0,totalerror - 10).
-lock translationpower to max(0,0.2-te2).
-
-if p:periapsis > targetperiapsis {
-	lock throttle to 0.01.
-	when p:periapsis <= targetperiapsis then {set step to "Done".}.
+if derped {
+	print "lol you done goofed".
 }.
-else {
-	set ship:control:fore to -translationpower.
-	when p:periapsis >= targetperiapsis then {set step to "Done".}.
-}.
-
-rcs on.
-lock df to prograde.
-lock rcspower to ship:mass/100.
-set step to "Not done".
-until step = "Done" {
-	run pid1(rcspower,rcspower,0).
-	wait 0.1.
-}.
-delete pid1.
-set ship:control:fore to 0.
-lock throttle to 0.
-rcs off.

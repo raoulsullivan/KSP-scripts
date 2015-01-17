@@ -22,20 +22,26 @@ if step = "1" {
 	run joleen2.
 	delete joleen2.
 	clearscreen.
-} else if step = "2" {
-	copy trixieintercept2 from 0.
-	run trixieintercept2.
-	delete trixieintercept2.
 } else if step = "3" {
-	copy trixieland from 0.
-	run trixieland.
-	delete trixieland.
+	print "Step 3: Orbital science!".
+	copy joleen_survey from 0.
+	run joleen_survey.
+	delete joleen_survey.
+	clearscreen.
 } else if step = "4" {
-	copy trixiereturn1 from 0.
-	run trixiereturn1.
-	delete trixiereturn1.
-	copy trixiereturn2 from 0.
-	run trixiereturn2.
-	delete trixiereturn2.
+	print "Step 4: Landing!".
+	copy joleenland from 0.
+	run joleenland.
+	delete joleenland.
+	clearscreen.
+} else if step = "5" {
+	print "Step 5: Homeward!".
+	copy joleenreturn1 from 0.
+	run joleenreturn1.
+	delete joleenreturn1.
+	copy joleenreturn2 from 0.
+	run joleenreturn2.
+	delete joleenreturn2.
+	clearscreen.
 }.
 print "NEXT!".

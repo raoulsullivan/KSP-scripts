@@ -1,55 +1,50 @@
+//Match inclination
+copy baldevinc from 0.
+run baldevinc("minmus").
+delete baldevinc.
+copy perf_node from 0.
+run perf_node(false,1,0,0,true,false,true).
+delete perf_node.
+clearscreen.
+//Intercept
 copy calc_interceptnode from 0.
 run calc_interceptnode("Minmus").
-set warp to 3.
-set ttime to time + nextnode:eta - 350.
-wait until time > ttime.
-set warp to 0.
+copy warpscript from 0.
+run warpscript(nextnode:eta - 350).
+delete warpscript.
 remove nextnode.
 run calc_interceptnode("Minmus").
 delete calc_interceptnode.
-wait 5.
 clearscreen.
 copy perf_node from 0.
-run perf_node(true,1,0,0,true,false).
+run perf_node(false,1,0,0,true,false,false).
 delete perf_node.
-if ship:obt:hasnextpatch = false {
-	set derped to true.
-} else {
-	if ship:obt:nextpatch:body:name <> "Minmus" {
-		set derped to true.
-	} else {
-		set derped to false.
-	}.
-}.
-
-if derped {
-	if apoapsis > body("Minmus"):obt:apoapsis {
-		lock df to retrograde.
-		when apoapsis < body("Minmus"):obt:apoapsis then {set step to "Done".}.
-	} else {
-		lock df to prograde.
-		when apoapsis > body("Minmus"):obt:apoapsis then {set step to "Done".}.
-	}.
-	copy pidsetup from 0.
-	run pidsetup(0.1,2,0.1,2,0.1,2,1,1,1).
-	delete pidsetup.
-	when ontarget = true then { lock throttle to 0.01.}.
-	rcs on.
-	until step = "Done" {
-		run pid1(.2,.2,1).
-	}.
-	rcs off.
-	lock throttle to 0.
-}.
+//Trim
 copy trim_intercept from 0.
-run trim_intercept(20000).
+run trim_intercept(200000).
 delete trim_intercept.
-set warp to 5.
-wait until ship:obt:body:name = "Minmus".
-set warp to 0.
+//Coast
+copy warpscript from 0.
+run warpscript(ETA:TRANSITION + 300).
+delete warpscript.
+//Circularise
+copy trim_insert from 0.
+run trim_insert(20000,80).
+delete trim_insert.
+//get captchad
 copy calc_circnode from 0.
-run calc_circnode(ship:periapsis).
+run calc_circnode(targetperiapsis).
 delete calc_circnode.
 copy perf_node from 0.
-run perf_node(false,1,0,0,true,false).
+run perf_node(false,1,0,0,true,false,false).
+delete perf_node.
+copy warpscript from 0.
+run warpscript(300).
+delete warpscript.
+//circularise
+copy calc_circnode from 0.
+run calc_circnode(targetperiapsis).
+delete calc_circnode.
+copy perf_node from 0.
+run perf_node(false,1,0,0,true,false,false).
 delete perf_node.
