@@ -13,7 +13,7 @@ if n:deltav:mag < rcsthreshold {
 	set usercs to false.
 	print "Use main engines for this burn".
 	set thrust to ship:maxthrust.
-	set isp to 380.
+	set isp to 390.
 }.
 set thrust to thrust * 1000.
 print "Thrust available (kN): "+thrust/1000.

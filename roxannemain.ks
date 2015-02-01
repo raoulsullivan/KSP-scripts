@@ -12,30 +12,21 @@ if step = "1" {
 	clearscreen.
 } else if step = "2" {
 	print "Step 2: Transfer".
-	copy joleen2 from 0.
-	run joleen2.
-	delete joleen2.
+	copy roxanne2 from 0.
+	run roxanne2.
+	delete roxanne2.
 	clearscreen.
 } else if step = "3" {
 	print "Step 3: Orbital science!".
-	copy joleen_survey from 0.
-	run joleen_survey.
-	delete joleen_survey.
-	clearscreen.
+	//Do survey
+	copy perf_survey from 0.
+	run perf_survey("Mk1-2 command pod","btsmmodulesciencezonedisplay","biome","btsmmodulecrewreport","crew report").
+	delete perf_survey.
 } else if step = "4" {
-	print "Step 4: Landing!".
-	copy joleenland from 0.
-	run joleenland.
-	delete joleenland.
-	clearscreen.
-} else if step = "5" {
-	print "Step 5: Homeward!".
-	copy joleenreturn1 from 0.
-	run joleenreturn1.
-	delete joleenreturn1.
-	copy joleenreturn2 from 0.
-	run joleenreturn2.
-	delete joleenreturn2.
+	print "Go home!".
+	copy roxanne3 from 0.
+	run roxanne3.
+	delete roxanne3.
 	clearscreen.
 }.
 print "NEXT!".
