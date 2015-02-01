@@ -7,8 +7,7 @@ print "Check to see if this is on target?!".
 set n to nextnode.
 set derped to true.
 if n:orbit:hasnextpatch {
-	lock neworbit to n:orbit:nextpatch.
-	if neworbit:body:name = tgt {
+	if n:orbit:nextpatch:body:name = tgt {
 		print "Intercept with right body".
 		set derped to false.
 		
@@ -27,33 +26,52 @@ if n:orbit:hasnextpatch {
 			print "... so lower pe to other side - make node earlier".
 			wait 5.
 			//move orbit to other side of planet with retrograde burn.
-			until neworbit:periapsis < 0 {
+			set done to false.
+			until done {
 				set n:eta to n:eta - 0.1.
+				if n:orbit:hasnextpatch {
+					if n:orbit:nextpatch:periapsis < 0 {
+						set done to true.
+					}.
+				}.
 			}.
 			print "Ok, we're hitting the planet - raise the pe now".
 			wait 5.
-			until neworbit:periapsis > targetperiapsis {
-				print neworbit:periapsis.
+			set done to false.
+			until done {
 				set n:eta to n:eta - 0.1.
+				if n:orbit:hasnextpatch {
+					if n:orbit:nextpatch:periapsis > targetperiapsis {
+						set done to true.
+					}.
+				}.
 			}.
 		} else {
 			print "Clockwise orbit".
 			//either raise or lower pe on this side of planet
-			if neworbit:periapsis < targetperiapsis {
+			if n:orbit:nextpatch:periapsis < targetperiapsis {
 				print "Raise pe - earlier node".
 				wait 5.
 				//raise it
-				until neworbit:periapsis > targetperiapsis {
-					print neworbit:periapsis.
+				until done {
 					set n:eta to n:eta - 0.1.
+					if n:orbit:hasnextpatch {
+						if n:orbit:nextpatch:periapsis > targetperiapsis {
+							set done to true.
+						}.
+					}.
 				}.
 			} else {
 				print "Lower pe - later node".
 				wait 5.
 				//lower it
-				until neworbit:periapsis < targetperiapsis {
-					print neworbit:periapsis.
+				until done {
 					set n:eta to n:eta + 0.1.
+					if n:orbit:hasnextpatch {
+						if n:orbit:nextpatch:periapsis < targetperiapsis {
+							set done to true.
+						}.
+					}.
 				}.
 			}.
 		}.
