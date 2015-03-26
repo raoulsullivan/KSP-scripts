@@ -11,7 +11,7 @@ set PIDLastErrors[0] to pE.
 if pE > 180 {set pE to (360 - pE) * -1.}.
 if pE < -180 {set pE to (360 + pE).}.
 if abs(pE) < pThresh and (abs(pE - lPE) < (pThresh/45)) { set pDZ to 0.} else {set pDZ to 1.}.
-set ship:control:pitch to pitchpower * pDZ * ((PIDvars[4] * abs(min(pE,10))^1/3 * (abs(pE)/pE)) + (PIDvars[5]*(pE - lPE))).
+set ship:control:pitch to pitchpower * pDZ * ((PIDvars[4] * abs(min(abs(pE),10))^1/3 * (abs(pE)/pE)) + (PIDvars[5]*(pE - lPE))).
 
 set lYE to PIDLastErrors[1].
 set yE to yawOff.
@@ -19,7 +19,7 @@ set PIDLastErrors[1] to yE.
 if yE > 180 {set yE to (360 - yE) * -1.}.
 if yE < -180 {set yE to (360 + yE).}.
 if abs(yE) < yThresh and (abs(yE - lYE) < (yThresh/45)) { set yDZ to 0.} else {set yDZ to 1.}.
-set ship:control:Yaw to yawpower * yDZ * ((PIDvars[2] * abs(min(yE,10))^1/3 * (abs(yE)/yE)) + (PIDvars[3] * (yE - lYE))).
+set ship:control:Yaw to yawpower * yDZ * ((PIDvars[2] * abs(min(abs(yE),10))^1/3 * (abs(yE)/yE)) + (PIDvars[3] * (yE - lYE))).
 
 
 if rollpower <> 0 {

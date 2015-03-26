@@ -1,4 +1,4 @@
-declare parameter tgt, targetperiapsis.
+declare parameter tgt, targetperiapsis, return.
 clearscreen.
 print "Trimming intercept periapsis to "+(targetperiapsis/1000)+"km".
 print "Check to see if this is on target?!".
@@ -10,7 +10,10 @@ if n:orbit:hasnextpatch {
 	if n:orbit:nextpatch:body:name = tgt {
 		print "Intercept with right body".
 		set derped to false.
-		
+		set increment to 0.1.
+		//if return {
+		//	set increment to -0.1.
+		//}.
 		//trim obt direction - need to tell which way around the orbit is!
 		//let's assume that if the apoapsis of the current orbit is less than the altitude of the planet at time
 		//this only works for circular targets at the mo
@@ -28,7 +31,7 @@ if n:orbit:hasnextpatch {
 			//move orbit to other side of planet with retrograde burn.
 			set done to false.
 			until done {
-				set n:eta to n:eta - 0.1.
+				set n:eta to n:eta - increment.
 				if n:orbit:hasnextpatch {
 					if n:orbit:nextpatch:periapsis < 0 {
 						set done to true.
@@ -39,7 +42,7 @@ if n:orbit:hasnextpatch {
 			wait 5.
 			set done to false.
 			until done {
-				set n:eta to n:eta - 0.1.
+				set n:eta to n:eta - increment.
 				if n:orbit:hasnextpatch {
 					if n:orbit:nextpatch:periapsis > targetperiapsis {
 						set done to true.
@@ -47,14 +50,15 @@ if n:orbit:hasnextpatch {
 				}.
 			}.
 		} else {
-			print "Clockwise orbit".
+			print "Anticlockwise orbit".
 			//either raise or lower pe on this side of planet
 			if n:orbit:nextpatch:periapsis < targetperiapsis {
 				print "Raise pe - earlier node".
 				wait 5.
 				//raise it
+				set done to false.
 				until done {
-					set n:eta to n:eta - 0.1.
+					set n:eta to n:eta - increment.
 					if n:orbit:hasnextpatch {
 						if n:orbit:nextpatch:periapsis > targetperiapsis {
 							set done to true.
@@ -65,8 +69,9 @@ if n:orbit:hasnextpatch {
 				print "Lower pe - later node".
 				wait 5.
 				//lower it
+				set done to false.
 				until done {
-					set n:eta to n:eta + 0.1.
+					set n:eta to n:eta + increment.
 					if n:orbit:hasnextpatch {
 						if n:orbit:nextpatch:periapsis < targetperiapsis {
 							set done to true.

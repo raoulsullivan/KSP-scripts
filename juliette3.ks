@@ -33,10 +33,18 @@ print "Velocity for soi: "+v2.
 set vom to velocity:orbit:mag.          // actual velocity
 set r to bd:radius + altitude.                 // actual distance to body
 set va to sqrt( vom^2 - 2*body:mu*(1/ra - 1/r) ).
-print "Average velocity: "+va.
-set deltav to v2 - va.
-print "DV: "+deltav.
+set isp to 390.
+set initialmass to ship:mass*1000.
+set fuelmass to (ship:partsdubbed("Rockomax X200-32 Fuel Tank")[0]:mass - ship:partsdubbed("Rockomax X200-32 Fuel Tank")[0]:drymass)*1000.
+set finalmass to initialmass - fuelmass.
+print "Initial mass: "+round(initialmass).
+print "Final mass: "+round(finalmass).
 
+set deltav to (9.81 * isp) * ln(initialmass / finalmass).
+print "Average velocity: "+va.
+set v2 to va + deltav.
+print "DV: "+round(deltav).
+print "V2: "+round(v2).
 
 set pc to body:body:position - body:position.
 // angular positions
@@ -55,16 +63,22 @@ set e to sqrt(1+(2*soe*(h/body:mu)^2)).      // eccentricity of hyperbolic orbit
 print e.
 set tai to arccos(-1/e).                // angle between the periapsis vector and the departure asymptote
 set sma to - (body:mu/(2*soe)).
-set ip to -sma/tan(arcsin(1/e)).        // impact parameter 
+set ip to -sma/tan(arcsin(1/e)).        // impact parameter
+print "Impact parameter "+round(ip). 
 set aip to arctan(ip/soi).              // angle to turn leaving mun soi point on mun orbit
 set asoi to tai - aip.
-set aburn to ac + -99 + asoi.
+set aburn to ac + 0 + asoi.
 until aburn < as0 { set aburn to aburn - 360. }
 set eta to (as0 - aburn)/360 * ship:obt:period.
 set nd to node(time:seconds + eta, 0, 0, deltav).
 add nd.
 
+copy trim_intercept_node from 0.
+run trim_intercept_node("Kerbin",31000, true).
+delete trim_intercept_node.
+
 lock df to nd:deltav:mag.
+wait 5.
 clearscreen.
 
 copy perf_node from 0.
@@ -80,7 +94,7 @@ copy PID1 from 0.
 set step to "Not done".
 lock kperi to ship:obt:nextpatch:periapsis.
 rcs on.
-if  kperi > 31000 {
+if  kperi > 33000 {
 	when ontarget then {
 		lock throttle to 0.01.
 		when kperi <= 33000 then { set step to "Done".}.

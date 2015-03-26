@@ -66,7 +66,7 @@ if nodelock {
 }.
 if progradelock {lock dF to prograde + r(0,0,270).}.
 copy pidsetup from 0.
-run pidsetup(0.1,2,0.1,2,0.1,2,.1,.1,.1).
+run pidsetup(0.2,2,0.2,2,0.2,2,.1,.1,.1).
 delete pidsetup.
 copy PID1 from 0.
 set rp to 0.
